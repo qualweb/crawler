@@ -37,8 +37,9 @@ class Crawl {
                         log_update_1.default('Crawled ' + this.crawledURLS++ + ' pages ' + `${frame}`);
                     }
                     if (typeof maxUrls === 'number' && maxUrls > 0 && this.urls.length >= maxUrls) {
-                        this.stop();
-                        resolve();
+                        isRunning = false;
+                        clearInterval(interval);
+                        this.crawler.emit('complete');
                     }
                 }
             });
