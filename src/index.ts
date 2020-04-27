@@ -26,6 +26,7 @@ class Crawl {
         this.crawler.maxDepth = 0;
         this.crawler.stripQuerystring = true;
       }
+      const maxUrls = options && options.maxUrls;
 
       let isRunning = true;
 
@@ -35,8 +36,8 @@ class Crawl {
       }, 100);
 
       this.crawler.on('fetchcomplete', (item: any) => {
-        if (item && item['stateData'] && item['stateData']['contentType'] && 
-            item['stateData']['contentType'].includes('text/html') && 
+        if (item && item['stateData'] && item['stateData']['contentType'] &&
+            item['stateData']['contentType'].includes('text/html') &&
             !this.urls.includes(item.url)) {
 
           if (isRunning) {
@@ -44,9 +45,14 @@ class Crawl {
             const frame = this.frames[this.i = ++this.i % this.frames.length];
             logUpdate('Crawled ' + this.crawledURLS++ + ' pages ' + `${frame}`);
           }
+
+          if(typeof maxUrls === 'number' && maxUrls>0 && this.urls.length >= maxUrls) {
+            this.stop();
+            resolve();
+          }
         }
       });
-      
+
       this.crawler.on('complete', () => {
         this.stop();
         resolve();
@@ -61,7 +67,7 @@ class Crawl {
           ioHook.stop();
         }
       });
-      
+
       ioHook.start();
 
       this.crawler.start();
