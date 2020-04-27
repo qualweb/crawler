@@ -47,8 +47,9 @@ class Crawl {
           }
 
           if(typeof maxUrls === 'number' && maxUrls>0 && this.urls.length >= maxUrls) {
-            this.stop();
-            resolve();
+            isRunning = false;
+            clearInterval(interval);
+            this.crawler.emit('complete');
           }
         }
       });
