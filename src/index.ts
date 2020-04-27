@@ -45,16 +45,14 @@ class Crawl {
             const frame = this.frames[this.i = ++this.i % this.frames.length];
             logUpdate('Crawled ' + this.crawledURLS++ + ' pages ' + `${frame}`);
             if(typeof maxUrls === 'number' && maxUrls>0 && this.urls.length >= maxUrls) {
-              isRunning = false;
-              clearInterval(interval);
               this.crawler.emit('complete');
             }
           }
-
         }
       });
 
       this.crawler.on('complete', () => {
+        clearInterval(interval);
         this.stop();
         resolve();
         console.log('\nCrawler done!');
