@@ -44,13 +44,13 @@ class Crawl {
             this.urls.push(item.url);
             const frame = this.frames[this.i = ++this.i % this.frames.length];
             logUpdate('Crawled ' + this.crawledURLS++ + ' pages ' + `${frame}`);
+            if(typeof maxUrls === 'number' && maxUrls>0 && this.urls.length >= maxUrls) {
+              isRunning = false;
+              clearInterval(interval);
+              this.crawler.emit('complete');
+            }
           }
 
-          if(typeof maxUrls === 'number' && maxUrls>0 && this.urls.length >= maxUrls) {
-            isRunning = false;
-            clearInterval(interval);
-            this.crawler.emit('complete');
-          }
         }
       });
 
