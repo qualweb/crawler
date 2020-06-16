@@ -2,7 +2,6 @@
 
 import Crawler from 'simplecrawler';
 import logUpdate from 'log-update';
-import ioHook from 'iohook';
 
 class Crawl {
 
@@ -57,17 +56,6 @@ class Crawl {
         resolve();
         console.log('\nCrawler done!');
       });
-
-      ioHook.on('keydown', event => {
-        if (event && event.ctrlKey && event.keycode === 45) {
-          isRunning = false;
-          clearInterval(interval);
-          this.crawler.emit('complete');
-          ioHook.stop();
-        }
-      });
-
-      ioHook.start();
 
       this.crawler.start();
     });
