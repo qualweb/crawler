@@ -2,7 +2,6 @@
 
 import Crawler from 'simplecrawler';
 import logUpdate from 'log-update';
-import ioHook from 'iohook';
 
 class Crawl {
 
@@ -26,6 +25,7 @@ class Crawl {
         this.crawler.maxDepth = 0;
         this.crawler.stripQuerystring = true;
       }
+      const maxUrls = options && options.maxUrls;
 
       let isRunning = true;
 
@@ -35,34 +35,27 @@ class Crawl {
       }, 100);
 
       this.crawler.on('fetchcomplete', (item: any) => {
-        if (item && item['stateData'] && item['stateData']['contentType'] && 
-            item['stateData']['contentType'].includes('text/html') && 
+        if (item && item['stateData'] && item['stateData']['contentType'] &&
+            item['stateData']['contentType'].includes('text/html') &&
             !this.urls.includes(item.url)) {
 
           if (isRunning) {
             this.urls.push(item.url);
             const frame = this.frames[this.i = ++this.i % this.frames.length];
             logUpdate('Crawled ' + this.crawledURLS++ + ' pages ' + `${frame}`);
+            if(typeof maxUrls === 'number' && maxUrls>0 && this.urls.length >= maxUrls) {
+              this.crawler.emit('complete');
+            }
           }
         }
       });
-      
+
       this.crawler.on('complete', () => {
+        clearInterval(interval);
         this.stop();
         resolve();
         console.log('\nCrawler done!');
       });
-
-      ioHook.on('keydown', event => {
-        if (event && event.ctrlKey && event.keycode === 45) {
-          isRunning = false;
-          clearInterval(interval);
-          this.crawler.emit('complete');
-          ioHook.stop();
-        }
-      });
-      
-      ioHook.start();
 
       this.crawler.start();
     });
